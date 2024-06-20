@@ -12,10 +12,10 @@ class DBClient {
       try {
         this.client.connect();
         this.clientIsConnected = true;
-	return this.client.db(database);
+        return this.client.db(database);
       } catch (_err) {
         this.clientIsConnected = false;
-	return null;
+        return null;
       }
     }());
   }
@@ -31,7 +31,7 @@ class DBClient {
       }
       const users = await this.db.collection('users');
       return users.countDocuments();
-    } catch () {
+    } catch (_err) {
       return null;
     }
   }
@@ -43,7 +43,7 @@ class DBClient {
       }
       const files = await this.db.collection('files');
       return files.countDocuments();
-    } catch () {
+    } catch (_err) {
       return null;
     }
   }
