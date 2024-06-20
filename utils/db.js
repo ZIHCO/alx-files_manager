@@ -10,6 +10,7 @@ class DBClient {
       { useUnifiedTopology: true });
     this.client.connect()
       .then(() => {
+        this.db = this.client.db(database);
         this.clientIsConnected = true;
       })
       .catch(() => {
@@ -22,12 +23,12 @@ class DBClient {
   }
 
   async nbUsers() {
-    const users = await this.client.db(database).collection('users');
+    const users = await this.client.db.collection('users');
     return users.countDocuments();
   }
 
   async nbFiles() {
-    const files = await this.client.db(database).collection('files');
+    const files = await this.client.db.collection('files');
     return files.countDocuments();
   }
 }
