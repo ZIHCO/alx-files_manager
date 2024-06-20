@@ -12,11 +12,11 @@ class DBClient {
       try {
         this.client.connect();
         this.clientIsConnected = true;
-        this.db = this.client.db(database);
       } catch (_err) {
         this.clientIsConnected = false;
       }
     }());
+    this.db = this.client.db(database);
   }
 
   isAlive() {
