@@ -8,16 +8,14 @@ class DBClient {
     this.clientIsConnected = true;
     this.client = new MongoClient(`mongodb://${host}:${port}`,
       { useUnifiedTopology: true });
-    this.db = (async function run() {
-      try {
-        this.client.connect();
+    this.client.connect()
+      .then(() => {
+        this.db = this.client.db(database);
         this.clientIsConnected = true;
-        return this.client.db(database);
-      } catch (_err) {
+      })
+      .catch(() => {
         this.clientIsConnected = false;
-        return null;
-      }
-    }());
+      });
   }
 
   isAlive() {
@@ -25,27 +23,13 @@ class DBClient {
   }
 
   async nbUsers() {
-    try {
-      if (this.db === null) {
-        throw new Error('Error!');
-      }
-      const users = await this.db.collection('users');
-      return users.countDocuments();
-    } catch (_err) {
-      return null;
-    }
+    const users = await this.client.db().collection('users');
+    return users.countDocuments();
   }
 
   async nbFiles() {
-    try {
-      if (this.db === null) {
-        throw new Error('Error!');
-      }
-      const files = await this.db.collection('files');
-      return files.countDocuments();
-    } catch (_err) {
-      return null;
-    }
+    const files = await this.client.db().collection('files');
+    return files.countDocuments();
   }
 }
 
