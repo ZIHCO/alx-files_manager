@@ -10,7 +10,6 @@ class DBClient {
       { useUnifiedTopology: true });
     this.client.connect()
       .then(() => {
-        this.db = this.client.db(database);
         this.clientIsConnected = true;
       })
       .catch(() => {
