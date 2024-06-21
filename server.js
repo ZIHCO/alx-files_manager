@@ -1,11 +1,9 @@
-import router from './routes/index';
 import express from 'express';
+import router from './routes/index';
 
 const server = express();
 
-server.use('/status', router);
-
-server.use('/stats', router);
+server.use('/', router);
 
 const port = process.env.PORT || 5000;
 
