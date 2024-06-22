@@ -3,6 +3,8 @@ import router from './routes/index';
 
 const server = express();
 
+server.use(express.json());
+server.use(express.urlencoded({ extended: true }));
 server.use('/', router);
 
 const port = process.env.PORT || 5000;
