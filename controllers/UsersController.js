@@ -10,22 +10,25 @@ export default class UsersController {
     if (!password) {
       response.status(400).json({ error: 'Missing password' });
     }
-    try {
-      const userExist = dbClient.db().collection('users').findOne({ email });
-       const hashPassword = sha1(password);
-       const newUser = dbClient
-         .db()
-         .collection('user')
-         .insertOne({
-           email,
-           password: hashPassword,
-         });
-       response.status(201).json({
-         id: newUser.insertedId,
-         email,
-       });
-    } catch (_err) {
-      response.status(400).json({ error: 'Already exist' });
-    }
+    dbClient.getExistingUser(email)
+      .then((data) => {
+        if (data) {
+          throw new Error('Already exist');
+        }
+      })
+      .catch((error) => {
+        response.status(400).json({ error: error.message });
+      });
+    const newUser = dbClient.addNewUser({
+      email,
+      password: sha1(password),
+    });
+    newUser
+      .then((data) => {
+        response.status(201).json({
+          id: data.ops[0]._id,
+          email,
+        });
+      });
   }
 }

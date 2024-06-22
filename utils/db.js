@@ -30,6 +30,16 @@ class DBClient {
     const files = await this.client.db().collection('files');
     return files.countDocuments();
   }
+
+  async getExistingUser(email) {
+    const user = await this.client.db().collection('users').findOne({ email });
+    return user;
+  }
+
+  async addNewUser(obj) {
+    const user = await this.client.db().collection('users').insertOne(obj);
+    return user;
+  }
 }
 
 const dbClient = new DBClient();
