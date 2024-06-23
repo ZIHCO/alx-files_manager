@@ -15,6 +15,8 @@ class DBClient {
       .catch(() => {
         this.clientIsConnected = false;
       });
+    this.usersCollection = this.client.db().collection('users');
+    this.filesCollection = this.client.db().collection('files');
   }
 
   isAlive() {
@@ -22,23 +24,11 @@ class DBClient {
   }
 
   async nbUsers() {
-    const users = await this.client.db().collection('users');
-    return users.countDocuments();
+    return this.usersCollection.countDocuments();
   }
 
   async nbFiles() {
-    const files = await this.client.db().collection('files');
-    return files.countDocuments();
-  }
-
-  async getExistingUser(email) {
-    const user = await this.client.db().collection('users').findOne({ email });
-    return user;
-  }
-
-  async addNewUser(obj) {
-    const user = await this.client.db().collection('users').insertOne(obj);
-    return user;
+    return this.filesCollection.countDocuments();
   }
 }
 
