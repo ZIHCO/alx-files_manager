@@ -1,5 +1,7 @@
+import { ObjectID } from 'bson';
 import sha1 from 'sha1';
 import dbClient from '../utils/db';
+import redisClient from '../utils/redis';
 
 export default class UsersController {
   static async postNew(request, response) {
@@ -23,5 +25,16 @@ export default class UsersController {
       email, password: sha1(password),
     });
     response.status(201).json({ id: newUser.insertedId, email });
+  }
+
+  static async getMe(request, response) {
+    const userId = await redisClient.get(`auth_${request.get('X-Token')}`);
+    if (!userId) {
+      response.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+    const objectId = ObjectID.createFromHexString(userId);
+    const user = await dbClient.usersCollection.findOne({ _id: objectId });
+    response.status(200).json({ id: userId, email: user.email });
   }
 }
