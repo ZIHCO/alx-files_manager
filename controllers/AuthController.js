@@ -7,7 +7,7 @@ export default class AuthController {
   static async getConnect(request, response) {
     const auth = request.get('Authorization');
     const decodeAuth = Buffer.from(
-      auth.slice(auth.indexOf(' ') + 1), 'base64'
+      auth.slice(auth.indexOf(' ') + 1), 'base64',
     ).toString('utf-8');
     const email = decodeAuth.slice(0, decodeAuth.indexOf(':'));
     const password = decodeAuth.slice(decodeAuth.indexOf(':') + 1);
