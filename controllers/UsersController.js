@@ -1,4 +1,4 @@
-import { ObjectID } from 'bson';
+import { ObjectId } from 'mongodb';
 import sha1 from 'sha1';
 import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
@@ -33,8 +33,8 @@ export default class UsersController {
       response.status(401).json({ error: 'Unauthorized' });
       return;
     }
-    const objectId = ObjectID.createFromHexString(userId);
-    const user = await dbClient.usersCollection.findOne({ _id: objectId });
-    response.status(200).json({ id: userId, email: user.email });
+    const objectId = ObjectId(userId);
+    const userFromDB = await dbClient.usersCollection.findOne({ _id: objectId });
+    response.status(200).json({ id: userId, email: userFromDB.email });
   }
 }
