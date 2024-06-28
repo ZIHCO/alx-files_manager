@@ -113,15 +113,15 @@ export default class FilesController {
     if (!userId) return response.status(401).json({ error: 'Unauthorized' });
 
     const parentId = request.query.parentId || 0;
-    const page = parseInt(request.query.page, 10) || 1;
-    const skip = (page - 1);
+    const page = parseInt(request.query.page, 10) || 0;
+    const skip = page * 10;
     const pipeline = [];
 
     const totalDocuments = await dbClient.filesCollection.countDocuments(
       (parentId ? { parentId } : {}),
     );
     const totalPages = Math.ceil(totalDocuments / 10);
-    if (page > totalPages || page < 1) return response.status(400).json();
+    if (page > totalPages || page < 0) return response.status(400).json();
 
     if (parentId) {
       pipeline.push({
