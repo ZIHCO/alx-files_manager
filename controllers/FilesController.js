@@ -123,7 +123,7 @@ export default class FilesController {
     const totalDocuments = await dbClient.filesCollection.countDocuments(
       (parentId ? { parentId, userId } : { userId }),
     );
-    
+
     const totalPages = Math.ceil(totalDocuments / 20);
     if (page > totalPages || page < 0 || totalDocuments === 0) {
       return response.status(200).json([]);
