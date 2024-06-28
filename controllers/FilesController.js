@@ -120,7 +120,7 @@ export default class FilesController {
     const skip = page * 20;
     const pipeline = [];
 
-    const totalDocuments = await dbClient.filesCollection.countDocuments(
+    /* const totalDocuments = await dbClient.filesCollection.countDocuments(
       (parentId ? { parentId, userId } : { userId }),
     );
 
@@ -128,7 +128,7 @@ export default class FilesController {
     if (page > totalPages || page < 0) {
       return response.status(200).json([]);
     }
-    /* if (totalDocuments === 0) {
+    if (totalDocuments === 0) {
       return response.status(200).json([]);
     } */
 
