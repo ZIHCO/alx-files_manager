@@ -93,19 +93,22 @@ export default class FilesController {
   }
 
   static async getShow(request, response) {
-    const userId = redisClient.get(`auth_${request.get('X-Token')}`);
+    const userId = await redisClient.get(`auth_${request.get('X-Token')}`);
     if (!userId) {
-      response.status(401).json({ error: 'Unauthorized' });
-      return;
+      return response.status(401).json({ error: 'Unauthorized' });
     }
-    const fileExist = await dbClient.filesCollection.findOne({
-      _id: ObjectID(request.params.id),
-    });
-    if (!fileExist) {
-      response.status(404).json({ error: 'Not found' });
-      return;
+
+    let fileExist;
+    try {
+      const parseObjectID = ObjectID(request.params.id);
+      fileExist = await dbClient.filesCollection.findOne({
+        _id: parseObjectID,
+      });
+      if (!fileExist) throw new Error('Not found');
+    } catch (err) {
+      if (err) return response.status(404).json({ error: 'Not found' });
     }
-    response.status(201).json(fileExist);
+    return response.status(201).json(fileExist);
   }
 
   static async getIndex(request, response) {
