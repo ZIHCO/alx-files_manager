@@ -127,10 +127,10 @@ export default class FilesController {
     /*const totalPages = Math.ceil(totalDocuments / 20);
     if (page > totalPages || page < 0 || totalDocuments === 0) {
       return response.status(200).json([]);
-    }*/
+    }
     if ( totalDocuments === 0) {
       return response.status(200).json([]);
-    }
+    }*/
 
 
     if (parentId) {
