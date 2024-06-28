@@ -124,14 +124,13 @@ export default class FilesController {
       (parentId ? { parentId, userId } : { userId }),
     );
 
-    /*const totalPages = Math.ceil(totalDocuments / 20);
-    if (page > totalPages || page < 0 || totalDocuments === 0) {
+    const totalPages = Math.ceil(totalDocuments / 20);
+    if (page > totalPages || page < 0) {
       return response.status(200).json([]);
     }
-    if ( totalDocuments === 0) {
+    /* if (totalDocuments === 0) {
       return response.status(200).json([]);
-    }*/
-
+    } */
 
     if (parentId) {
       pipeline.push({
