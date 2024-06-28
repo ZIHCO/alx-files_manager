@@ -108,7 +108,7 @@ export default class FilesController {
     } catch (err) {
       if (err) return response.status(404).json({ error: 'Not found' });
     }
-    return response.status(201).json(fileExist);
+    return response.status(200).json(fileExist);
   }
 
   static async getIndex(request, response) {
