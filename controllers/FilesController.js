@@ -117,13 +117,13 @@ export default class FilesController {
 
     const parentId = request.query.parentId || 0;
     const page = parseInt(request.query.page, 10) || 0;
-    const skip = page * 10;
+    const skip = page * 20;
     const pipeline = [];
 
     const totalDocuments = await dbClient.filesCollection.countDocuments(
       (parentId ? { parentId } : {}),
     );
-    const totalPages = Math.ceil(totalDocuments / 10);
+    const totalPages = Math.ceil(totalDocuments / 20);
     if (page > totalPages || page < 0) return response.status(200).json([]);
 
     if (parentId) {
@@ -138,7 +138,7 @@ export default class FilesController {
         $sort: { _id: 1 },
       },
       { $skip: skip },
-      { $limit: 10 },
+      { $limit: 20 },
     );
     const result = await dbClient.filesCollection.aggregate(pipeline).toArray();
     return response.status(200).json(result);
