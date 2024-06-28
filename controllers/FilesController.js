@@ -124,7 +124,7 @@ export default class FilesController {
       (parentId ? { parentId } : {}),
     );
     const totalPages = Math.ceil(totalDocuments / 10);
-    if (page > totalPages || page < 0) return response.status(400).json();
+    if (page > totalPages || page < 0) return response.status(201).json([]);
 
     if (parentId) {
       pipeline.push({
