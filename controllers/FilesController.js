@@ -91,4 +91,53 @@ export default class FilesController {
       parentId,
     });
   }
+
+  static async getShow(request, response) {
+    const userId = redisClient.get(`auth_${request.get('X-Token')}`);
+    if (!userId) {
+      response.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+    const fileExist = await dbClient.filesCollection.findOne({
+      _id: ObjectID(request.params.id),
+    });
+    if (!fileExist) {
+      response.status(404).json({ error: 'Not found' });
+      return;
+    }
+    response.status(201).json(fileExist);
+  }
+
+  static async getIndex(request, response) {
+    const userId = await redisClient.get(`auth_${request.get('X-Token')}`);
+    if (!userId) return response.status(401).json({ error: 'Unauthorized' });
+
+    const parentId = request.query.parentId || 0;
+    const page = parseInt(request.query.page, 10) || 1;
+    const skip = (page - 1);
+    const pipeline = [];
+
+    const totalDocuments = await dbClient.filesCollection.countDocuments(
+      (parentId ? { parentId } : {}),
+    );
+    const totalPages = Math.ceil(totalDocuments / 10);
+    if (page > totalPages || page < 1) return response.status(400).json();
+
+    if (parentId) {
+      pipeline.push({
+        $match: {
+          parentId,
+        },
+      });
+    }
+    pipeline.push(
+      {
+        $sort: { _id: 1 },
+      },
+      { $skip: skip },
+      { $limit: 10 },
+    );
+    const result = await dbClient.filesCollection.aggregate(pipeline).toArray();
+    return response.status(201).json(result);
+  }
 }
