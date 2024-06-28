@@ -124,7 +124,7 @@ export default class FilesController {
       (parentId ? { parentId } : {}),
     );
     const totalPages = Math.ceil(totalDocuments / 10);
-    if (page > totalPages || page < 0) return response.status(201).json([]);
+    if (page > totalPages || page < 0) return response.status(200).json([]);
 
     if (parentId) {
       pipeline.push({
@@ -141,6 +141,6 @@ export default class FilesController {
       { $limit: 10 },
     );
     const result = await dbClient.filesCollection.aggregate(pipeline).toArray();
-    return response.status(201).json(result);
+    return response.status(200).json(result);
   }
 }
