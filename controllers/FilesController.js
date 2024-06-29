@@ -132,11 +132,19 @@ export default class FilesController {
       return response.status(200).json([]);
     } */
 
-    pipeline.push({
-      $match: {
-        parentId, userId: ObjectID(userId),
-      },
-    });
+    if (parentId) {
+      pipeline.push({
+        $match: {
+          parentId, userId: ObjectID(userId),
+        },
+      });
+    } else {
+      pipeline.push({
+        $match: {
+          userId: ObjectID(userId),
+        },
+      });
+    }
     pipeline.push(
       {
         $sort: { _id: 1 },
