@@ -150,8 +150,13 @@ export default class FilesController {
 
     const result = await dbClient.filesCollection.aggregate(pipeline).toArray();
     result.forEach((object, index, result) => {
-      result[index].id = object._id;
-      delete result[index]._id;
+      Object.defineProperty(result[index], 'id', {
+        value: object._id,
+        writable: true,
+        enumerable: true,
+        configurable: true,
+      });
+      Reflect.deleteProperty(result[index], '_id');
     });
     console.log(result);
 
