@@ -102,7 +102,7 @@ export default class FilesController {
     try {
       const parseObjectID = ObjectID(request.params.id);
       fileExist = await dbClient.filesCollection.findOne({
-        _id: parseObjectID,
+        _id: parseObjectID, userId
       });
       if (!fileExist) throw new Error('Not found');
     } catch (err) {
