@@ -121,18 +121,6 @@ export default class FilesController {
     const skip = page * 20;
     const pipeline = [];
 
-    /* const totalDocuments = await dbClient.filesCollection.countDocuments(
-      (parentId ? { parentId, userId } : { userId }),
-    );
-
-    const totalPages = Math.ceil(totalDocuments / 20);
-    if (page > totalPages || page < 0) {
-      return response.status(200).json([]);
-    }
-    if (totalDocuments === 0) {
-      return response.status(200).json([]);
-    } */
-
     pipeline.push({
       $match: {
         parentId, userId: ObjectID(userId),
@@ -160,5 +148,55 @@ export default class FilesController {
     });
 
     return response.status(200).json(result);
+  }
+
+  static async putPublish(request, response) {
+    const userId = await redisClient.get(`auth_${request.get('X-Token')}`);
+    if (!userId) return response.status(401).json({ error: 'Unauthorized' });
+
+    const fileExist = await dbClient.filesCollection.findOne({
+      userId: ObjectID(userId), _id: ObjectID(request.params.id),
+    });
+    if (!fileExist) return response.status(404).json({ error: 'Not found' });
+
+    await dbClient.filesCollection.updateOne(
+      { userId: ObjectID(userId), _id: ObjectID(request.params.id) },
+      { $set: { isPublic: true } },
+    );
+
+    Object.defineProperty(fileExist, 'id', {
+      value: true,
+      writable: true,
+      enumerable: true,
+      configurable: true,
+    });
+    Reflect.deleteProperty(fileExist, '_id');
+
+    return response.status(200).json(fileExist);
+  }
+
+  static async putUnpublish(request, response) {
+    const userId = await redisClient.get(`auth_${request.get('X-Token')}`);
+    if (!userId) return response.status(401).json({ error: 'Unauthorized' });
+
+    const fileExist = await dbClient.filesCollection.findOne({
+      userId: ObjectID(userId), _id: ObjectID(request.params.id),
+    });
+    if (!fileExist) return response.status(404).json({ error: 'Not found' });
+
+    await dbClient.filesCollection.updateOne(
+      { userId: ObjectID(userId), _id: ObjectID(request.params.id) },
+      { $set: { isPublic: false } },
+    );
+
+    Object.defineProperty(fileExist, 'id', {
+      value: false,
+      writable: true,
+      enumerable: true,
+      configurable: true,
+    });
+    Reflect.deleteProperty(fileExist, '_id');
+
+    return response.status(200).json(fileExist);
   }
 }
