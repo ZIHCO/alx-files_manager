@@ -116,7 +116,7 @@ export default class FilesController {
     const userId = await redisClient.get(`auth_${request.get('X-Token')}`);
     if (!userId) return response.status(401).json({ error: 'Unauthorized' });
 
-    const parentId = request.query.parentId || 0;
+    const parentId = request.query.parentId || '0';
     const page = parseInt(request.query.page, 10) || 0;
     const skip = page * 20;
     const pipeline = [];
@@ -133,27 +133,28 @@ export default class FilesController {
       return response.status(200).json([]);
     } */
 
-    if (parentId) {
-      pipeline.push({
-        $match: {
-          parentId, userId: ObjectID(userId),
-        },
-      });
-    } else {
-      pipeline.push({
-        $match: {
-          userId: ObjectID(userId),
-        },
-      });
-    }
+    pipeline.push({
+      $match: {
+        parentId, userId: ObjectID(userId),
+      },
+    });
+    pipeline.push({
+      $limit: 20,
+    });
     pipeline.push(
       {
         $sort: { _id: 1 },
       },
-      { $skip: skip },
-      { $limit: 20 },
     );
+    pipeline.push({ $skip: skip });
+
     const result = await dbClient.filesCollection.aggregate(pipeline).toArray();
+    result.forEach((object, index, result) => {
+      result[index].id = object._id;
+      delete result[index]._id;
+    });
+    console.log(result);
+
     return response.status(200).json(result);
   }
 }
