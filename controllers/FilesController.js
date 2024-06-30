@@ -164,15 +164,18 @@ export default class FilesController {
       { $set: { isPublic: true } },
     );
 
-    Object.defineProperty(fileExist, 'id', {
-      value: true,
+    const updatedFile = await dbClient.filesCollection.findOne({
+      userId: ObjectID(userId), _id: ObjectID(request.params.id),
+    });
+    Object.defineProperty(updatedFile, 'id', {
+      value: updatedFile._id,
       writable: true,
       enumerable: true,
       configurable: true,
     });
-    Reflect.deleteProperty(fileExist, '_id');
+    Reflect.deleteProperty(updatedFile, '_id');
 
-    return response.status(200).json(fileExist);
+    return response.status(200).json(updatedFile);
   }
 
   static async putUnpublish(request, response) {
@@ -189,14 +192,17 @@ export default class FilesController {
       { $set: { isPublic: false } },
     );
 
-    Object.defineProperty(fileExist, 'id', {
-      value: false,
+    const updatedFile = await dbClient.filesCollection.findOne({
+      userId: ObjectID(userId), _id: ObjectID(request.params.id),
+    });
+    Object.defineProperty(updatedFile, 'id', {
+      value: updatedFile._id,
       writable: true,
       enumerable: true,
       configurable: true,
     });
-    Reflect.deleteProperty(fileExist, '_id');
+    Reflect.deleteProperty(updatedFile, '_id');
 
-    return response.status(200).json(fileExist);
+    return response.status(200).json(updatedFile);
   }
 }
