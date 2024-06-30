@@ -135,7 +135,7 @@ export default class FilesController {
 
     pipeline.push({
       $match: {
-        parentId, userId: ObjectID(userId),
+        parentId: ObjectID(parentId), userId: ObjectID(userId),
       },
     });
     pipeline.push(
