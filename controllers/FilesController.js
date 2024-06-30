@@ -138,15 +138,15 @@ export default class FilesController {
         parentId, userId: ObjectID(userId),
       },
     });
-    pipeline.push({
-      $limit: 20,
-    });
     pipeline.push(
       {
         $sort: { _id: 1 },
       },
     );
     pipeline.push({ $skip: skip });
+    pipeline.push({
+      $limit: 20,
+    });
 
     const result = await dbClient.filesCollection.aggregate(pipeline).toArray();
     result.forEach((object, index, result) => {
@@ -158,7 +158,6 @@ export default class FilesController {
       });
       Reflect.deleteProperty(result[index], '_id');
     });
-    console.log(result);
 
     return response.status(200).json(result);
   }
