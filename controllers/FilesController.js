@@ -98,16 +98,17 @@ export default class FilesController {
       return response.status(401).json({ error: 'Unauthorized' });
     }
 
-    let fileExist;
     try {
-      const parseObjectID = ObjectID(request.params.id);
-      fileExist = await dbClient.filesCollection.findOne({
-        _id: parseObjectID, userId
-      });
-      if (!fileExist) throw new Error('Not found');
+      ObjectID(request.params.id);
+      ObjectID(userId);
     } catch (err) {
       if (err) return response.status(404).json({ error: 'Not found' });
     }
+
+    const fileExist = await dbClient.filesCollection.findOne({
+      userId: ObjectID(userId), _id: ObjectID(request.params.id),
+    });
+    if (!fileExist) return response.status(404).json({ error: 'Not found' });
     return response.status(200).json(fileExist);
   }
 
