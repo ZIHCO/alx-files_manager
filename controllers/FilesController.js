@@ -116,7 +116,7 @@ export default class FilesController {
     const userId = await redisClient.get(`auth_${request.get('X-Token')}`);
     if (!userId) return response.status(401).json({ error: 'Unauthorized' });
 
-    const parentId = ObjectID(request.query.parentId) || '0';
+    const parentId = request.query.parentId ? ObjectID(request.query.parentId) : '0';
     const page = parseInt(request.query.page, 10) || 0;
     const skip = page * 20;
     const pipeline = [];
